@@ -11,5 +11,5 @@
   
 <h2>Pull Request</h2>
 <p>Fell free for give a Pull Request, changes, updates like new levels, new enemys and others. Thanks for read!</p>
-
-<h3>Times Alwayd</h3>
+<hr>
+<p>Times Always!!!</p>
