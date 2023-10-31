@@ -6,8 +6,8 @@
 <p>Thanks for read!</p>
 
 <h2>Technologies</h2>
-<span>Python</span>
-<span>Pygame Lybray>
+<span>Python</span> | 
+<span>Pygame Lybray
   
 <h2>Pull Request</h2>
 <p>Fell free for give a Pull Request, changes, updates like new levels, new enemys and others. Thanks for read!</p>
