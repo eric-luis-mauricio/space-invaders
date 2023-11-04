@@ -13,7 +13,7 @@ STATE_GAME_OVER = 2
 state = STATE_START
 paused = False
 
-background = pygame.image.load('./images/background.png')
+background = pygame.image.load('./images/fundo.png')
 mixer.music.load('./sounds/background.wav')
 mixer.music.play(-1)
 pygame.display.set_caption('Space Invaders')
@@ -49,7 +49,7 @@ bulletimg = pygame.transform.scale(pygame.image.load('./images/bullet.png'), (bu
 bulletX = 0
 bulletY = 480
 bulletX_change = 5
-bulletY_change = 3
+bulletY_change = 15
 bullet_state = 'ready'
 
 score_value = 0
@@ -169,10 +169,10 @@ while True:
 
             enemyX[i] += enemyX_change[i]
             if enemyX[i] <= 0:
-                enemyX_change[i] = 2
+                enemyX_change[i] = 5
                 enemyY[i] += enemyY_change[i]
             elif enemyX[i] >= 736:
-                enemyX_change[i] = -1
+                enemyX_change[i] = -5
                 enemyY[i] += enemyY_change[i]
 
             colission = isCollision(enemyX[i], enemyY[i], bulletX,bulletY)
