@@ -1,3 +1,5 @@
+'''This is final version of the game rn, i intend in put new leves, a final boss and any things, but just in future'''
+
 import pygame
 from pygame import mixer
 import random
@@ -7,31 +9,23 @@ pygame.init()
 
 screen = pygame.display.set_mode((800,600))
 
-# Defining states
 STATE_START = 0
 STATE_PLAYING = 1
 STATE_GAME_OVER = 2
 state = STATE_START
+paused = False
 
-#background
-background = pygame.image.load('space invaders/fundo.png')
-
-#background sound
-mixer.music.load('space invaders/background.wav')
+background = pygame.image.load('./images/fundo.png')
+mixer.music.load('./sounds/background.wav')
 mixer.music.play(-1)
-
-#Caption and icon
 pygame.display.set_caption('Space Invaders')
-icon = pygame.image.load('space invaders/ovni.png')
+icon = pygame.image.load('./images/ovni.png')
 pygame.display.set_icon(icon)
 
-#Player
-playerimg = pygame.image.load('space invaders/ship.png')
+playerimg = pygame.image.load('./characters/ship.png')
 playerX = 370
 playerY = 480
 playerX_change = 0
-
-#Enemy
 enemyimg = []
 enemyX = []
 enemyY = []
@@ -40,30 +34,25 @@ enemyY_change = []
 num_of_enemies = 6
 
 for i in range(num_of_enemies):
-    enemyimg.append(pygame.image.load('space invaders/enemy.png'))
+    enemyimg.append(pygame.image.load('./characters/enemy.png'))
     enemyX.append(random.randint(0,800))
     enemyY.append(random.randint(50,150))
     enemyX_change.append( 3)
-    enemyY_change.append( 40)
+    enemyY_change.append( 10)
 
-#Bullet
-bulletimg = pygame.image.load('space invaders/bullet.png')
+bulletimg = pygame.image.load('./images/bullet.png')
 bulletX = 0
 bulletY = 480
 bulletX_change = 5
 bulletY_change = 15
 bullet_state = 'ready'
-
-# Score
 score_value = 0
 font = pygame.font.Font('freesansbold.ttf',32)
-
 textX = 10
 textY = 10
-
-#game over
 over_font = pygame.font.Font('freesansbold.ttf',64)
 
+#FUNCTIONS!!
 def show_score(x,y):
     score = font.render("Score: " +str(score_value), True, (255,255,255) )
     screen.blit(score, (x,y))
@@ -83,10 +72,9 @@ def fire_bullet(x,y):
     bullet_state = 'fire'
     screen.blit(bulletimg, ( x + 16, y + 10 ))
 
-
 def isCollision(enemyX,enemyY,bulletX,bulletY):
     distance = math.sqrt (math.pow(enemyX-bulletX,2)) + math.pow(enemyY-bulletY,2)
-    if distance < 27:
+    if distance < 60:
         return True
     else:
         return False
@@ -96,6 +84,7 @@ def start_screen():
     screen.blit(start_text, (200, 250))
 
 def restart():
+
     global state, score_value
     score_value = 0
     for i in range(num_of_enemies):
@@ -103,19 +92,32 @@ def restart():
         enemyY[i] = random.randint(50,150)
     state = STATE_PLAYING
 
-#Game Loop
-running = True
-while running:
+def unpause_game():
+    global paused
+    paused = False
+    mixer.music.unpause()
+
+def pause_game():
+    global paused
+    paused = True
+    mixer.music.pause()
+    pause_text = font.render('PAUSED - PRESS P TO RESUME', True, (255, 255, 255))
+    screen.blit(pause_text, (200, 250))
+    pygame.display.update()
+    while paused:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN:
+                if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
+                    unpause_game()
+
+while True:
 
     screen.fill((0,0,0))
-    #background image
     screen.blit(background, (0,0))
 
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             running = False
-
-        #if keastroke is pressed check wheter its right or left
         if event.type == pygame.KEYDOWN:
             if state == STATE_START:
                 if event.key == pygame.K_SPACE:
@@ -126,11 +128,14 @@ while running:
                 if event.key == pygame.K_RIGHT:
                     playerX_change = 7
                 if event.key == pygame.K_SPACE:
-                    if bullet_state is 'ready':
-                        bullet_sound = mixer.Sound('space invaders/laser.wav')
+                    if bullet_state == 'ready':
+                        bullet_sound = mixer.Sound('./sounds/laser.wav')
                         bullet_sound.play()
                         bulletX = playerX
                         fire_bullet(playerX, bulletY)
+                if event.key == pygame.K_p or event.key == pygame.K_ESCAPE:
+                        pause_game()
+
             elif state == STATE_GAME_OVER:
                 if event.key == pygame.K_SPACE:
                     restart()
@@ -142,9 +147,8 @@ while running:
 
     if state == STATE_START:
         start_screen()
+
     elif state == STATE_PLAYING:
-        # 5 = 5 + -0.1 -> 5 = 5 - 0.1
-        # 5 - 5 + 0.1
         playerX += playerX_change
 
         if playerX < 0:
@@ -152,9 +156,7 @@ while running:
         elif playerX >= 736:
             playerX = 736
 
-        #Enemy movement
         for i in range(num_of_enemies):
-
             if enemyY[i] > 440:
                 state = STATE_GAME_OVER
                 break
@@ -167,28 +169,23 @@ while running:
                 enemyX_change[i] = -5
                 enemyY[i] += enemyY_change[i]
 
-            #collision
             colission = isCollision(enemyX[i], enemyY[i], bulletX,bulletY)
             if colission:
-                explosion_sound = mixer.Sound('space invaders/explosion.wav')
+                explosion_sound = mixer.Sound('./sounds/explosion.wav')
                 explosion_sound.play()
                 bulletY = 480
                 bullet_state = 'ready'
                 score_value += 100
                 enemyX[i] = random.randint(0,800)
                 enemyY[i] = random.randint(50,150)
-
             enemy(enemyX[i], enemyY[i], i)
 
-        #Bullet movement
         if bulletY <=0:
             bulletY = 480
             bullet_state = 'ready'
-
-        if bullet_state is 'fire':
+        if bullet_state == 'fire':
             fire_bullet(bulletX, bulletY)
             bulletY -= bulletY_change
-
         player(playerX, playerY)
         show_score(textX,textY)
     elif state == STATE_GAME_OVER:
