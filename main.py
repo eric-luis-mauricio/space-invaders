@@ -158,7 +158,7 @@ while True:
         playerX += playerX_change
 
         if playerX < 0:
-            playerX = 0
+            playerX = 10
         elif playerX >= 736:
             playerX = 736
 
